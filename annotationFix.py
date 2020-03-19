@@ -1,8 +1,30 @@
 import numpy as np
 import cv2 as cv
 
+def getContourCoordinates(contour):
+    coordinates = list()
+    approx_biggest = cv.approxPolyDP(contour, 0.009 * cv.arcLength(contour, True), True)
+    n = approx_biggest.ravel()
+    i = 0
+    for j in n:
+        if i % 2 == 0:
+            x = n[i]
+            y = n[i + 1]
+            coordinates.append((x, y))
+        i += 1
+    return coordinates
+
+def getContourCenter(contour):
+    m = cv.moments(contour)
+    cx = int(m["m10"] / m["m00"])
+    cy = int(m["m01"] / m["m00"])
+    cv.circle(result, (cx, cy), 7, (255, 255, 255), -1)
+    cv.putText(result, "center", (cx - 20, cy - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+    return cx, cy
+
+
 # load image
-image = cv.imread('images/right1.png')
+image = cv.imread('images/outlier3.png')
 imghsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 font = cv.FONT_HERSHEY_COMPLEX
 
@@ -43,16 +65,7 @@ biggest_contour_green = max(contours_green, key=cv.contourArea)
 contours_green_final = list()
 contours_green_final.append(biggest_contour_green)
 # Get coordinates of the biggest green contour
-coordinates_green_biggest = list()
-approx_biggest = cv.approxPolyDP(biggest_contour_green, 0.009 * cv.arcLength(biggest_contour_green, True), True)
-n = approx_biggest.ravel()
-i = 0
-for j in n:
-    if i % 2 == 0:
-        x = n[i]
-        y = n[i+1]
-        coordinates_green_biggest.append((x, y))
-    i += 1
+coordinates_green_biggest = getContourCoordinates(biggest_contour_green)
 coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda tup: tup[1])
 top_green_biggest = coordinates_green_biggest[0]
 bottom_green_biggest = coordinates_green_biggest[-1]
@@ -64,20 +77,11 @@ for c in contours_green:
             cv.drawContours(mask, [c], 0, 255, -1)
             continue
         # Get coordinates of other contours
-        coordinates_green = list()
-        approx = cv.approxPolyDP(c, 0.009 * cv.arcLength(c, True), True)
-        n = approx.ravel()
-        i = 0
-        for j in n:
-            if i % 2 == 0:
-                x = n[i]
-                y = n[i + 1]
-                coordinates_green.append((x, y))
-            i += 1
+        coordinates_green = getContourCoordinates(c)
         coordinates_green = sorted(coordinates_green, key=lambda tup: tup[1])
         top_green_other = coordinates_green[0]
         bottom_green_other = coordinates_green[-1]
-        # Check that coordinates match and that contour is big enough
+        # Check that coordinates match
         if bottom_green_other[1] < top_green_biggest[1] or top_green_other[1] > bottom_green_biggest[1]:
             cv.drawContours(mask, [c], 0, 255, -1)
         else:
@@ -108,37 +112,19 @@ cv.drawContours(result, contours_blue_final, -1, (255, 0, 0), -1)
 
 # Compute the center of contours
 # Red
-M_red = cv.moments(biggest_contour_red)
-cX_red = int(M_red["m10"] / M_red["m00"])
-cY_red = int(M_red["m01"] / M_red["m00"])
-cv.circle(result, (cX_red, cY_red), 7, (255, 255, 255), -1)
-cv.putText(result, "center RED", (cX_red - 20, cY_red - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-
+cX_red, cY_red = getContourCenter(biggest_contour_red)
 # Green
 green_position = ""
 if len(contours_green_final) == 1:
-    M_green = cv.moments(biggest_contour_green)
-    cX_green = int(M_green["m10"] / M_green["m00"])
-    cY_green = int(M_green["m01"] / M_green["m00"])
-    cv.circle(result, (cX_green, cY_green), 7, (255, 255, 255), -1)
-    cv.putText(result, "center GREEN", (cX_green - 20, cY_green - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+    cX_green, cY_green = getContourCenter(biggest_contour_green)
     if cX_green < left_red[0]:
-        print("Beločnica je levo")
         green_position = "left"
     elif cX_green > right_red[0]:
-        print("Beločnica je desno")
         green_position = "right"
     else:
-        print("Beločnica je okoli")
         green_position = "around"
 elif len(contours_green_final) == 2:
-    for c in contours_green_final:
-        M_green = cv.moments(c)
-        cX_green = int(M_green["m10"] / M_green["m00"])
-        cY_green = int(M_green["m01"] / M_green["m00"])
-        cv.circle(result, (cX_green, cY_green), 7, (255, 255, 255), -1)
-        cv.putText(result, "center GREEN", (cX_green - 20, cY_green - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
-    print("Beločnica je dvo delna")
+    cX_green_2, cY_green_2 = getContourCenter(contours_green_final[1])
     green_position = "two_part"
 else:
     print("Error")
@@ -168,13 +154,11 @@ elif green_position == "right":
 
 cv.circle(result, top_red, 7, (255, 255, 255), -1)
 cv.circle(result, bottom_red, 7, (255, 255, 255), -1)
-cv.circle(result, left_red, 7, (255, 255, 255), -1)
-cv.circle(result, right_red, 7, (255, 255, 255), -1)
 
 # Fill inside of final contours with correct color
-cv.drawContours(result, contours_red, -1, (255, 255, 255), 2)
-#cv.drawContours(result, contours_green_final, -1, (0, 255, 0), -1)
-#cv.drawContours(result, contours_blue_final, -1, (255, 0, 0), -1)
+# cv.drawContours(result, contours_red_final, -1, (255, 0, 255), 3)
+# cv.drawContours(result, contours_green_final, -1, (0, 255, 0), -1)
+# cv.drawContours(result, contours_blue_final, -1, (255, 0, 0), -1)
 
 
 # Show image
