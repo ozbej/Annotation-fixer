@@ -22,8 +22,25 @@ def getContourCenter(contour):
     cv.putText(result, "center", (cx - 20, cy - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
     return cx, cy
 
+def getEdgeContour(coordinates, center, position):
+    if position == "left":
+        coordinates = sorted(coordinates, key=lambda x: x[0] + x[1])
+        bottom_right = coordinates[-1]
+        coordinates = sorted(coordinates, key=lambda x: x[0] + (3000 - x[1]))
+        top_right = coordinates[-1]
+        array = [center, bottom_right, bottom_red, (cX_red, cY_red), top_red, top_right]
+    elif position == "right":
+        coordinates = sorted(coordinates, key=lambda x: x[0] + x[1])
+        top_left = coordinates[0]
+        coordinates = sorted(coordinates, key=lambda x: (3000 - x[0]) + x[1])
+        bottom_left = coordinates[-1]
+        array = [center, bottom_left, bottom_red, (cX_red, cY_red), top_red, top_left]
+    elif position == "around":
+        array = [top_green_biggest, right_green_biggest, bottom_green_biggest, left_green_biggest]
+    return array
 
-# load image
+
+# Load image
 image = cv.imread('images/2part1.png')
 imghsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 font = cv.FONT_HERSHEY_COMPLEX
@@ -69,6 +86,8 @@ coordinates_green_biggest = getContourCoordinates(biggest_contour_green)
 coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda tup: tup[1])
 top_green_biggest = coordinates_green_biggest[0]
 bottom_green_biggest = coordinates_green_biggest[-1]
+left_green_biggest = tuple(biggest_contour_green[biggest_contour_green[:, :, 0].argmin()][0])
+right_green_biggest = tuple(biggest_contour_green[biggest_contour_green[:, :, 0].argmax()][0])
 # Draw all green contours but the biggest one on the mask
 for c in contours_green:
     if not np.array_equal(biggest_contour_green, c):
@@ -100,7 +119,6 @@ for c in contours_blue:
 contours_blue_final = list()
 contours_blue_final.append(biggest_contour_blue)
 
-
 # Apply the mask to the original image
 mask = cv.bitwise_not(mask)
 result = cv.bitwise_and(image, image, mask=mask)
@@ -131,27 +149,11 @@ else:
     print("Error")
 
 if green_position == "left":
-    coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda x: x[0] + x[1])
-    bottom_right = coordinates_green_biggest[-1]
-    coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda x: x[0] + (3000 - x[1]))
-    top_right = coordinates_green_biggest[-1]
-    cv.circle(result, bottom_right, 7, (255, 255, 255), -1)
-    cv.circle(result, top_right, 7, (255, 255, 255), -1)
-    array = [(cX_green, cY_green), bottom_right, bottom_red, (cX_red, cY_red), top_red, top_right]
-    edge_contour = [np.array([array], dtype=np.int32)]
-    #cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
-    #cv.drawContours(result, edge_contour, 0, (255, 255, 255), 2)
+    edge_contour = [np.array([getEdgeContour(coordinates_green_biggest, (cX_green, cY_green), "left")], dtype=np.int32)]
 elif green_position == "right":
-    coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda x: x[0] + x[1])
-    top_left = coordinates_green_biggest[0]
-    coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda x: (3000 - x[0]) + x[1])
-    bottom_left = coordinates_green_biggest[-1]
-    cv.circle(result, top_left, 7, (0, 255, 255), -1)
-    cv.circle(result, bottom_left, 7, (255, 255, 255), -1)
-    array = [(cX_green, cY_green), bottom_left, bottom_red, (cX_red, cY_red), top_red, top_left]
-    edge_contour = [np.array([array], dtype=np.int32)]
-    # cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
-    cv.drawContours(result, edge_contour, 0, (255, 255, 255), 2)
+    edge_contour = [np.array([getEdgeContour(coordinates_green_biggest, (cX_green, cY_green), "right")], dtype=np.int32)]
+elif green_position == "around":
+    edge_contour = [np.array([getEdgeContour(coordinates_green_biggest, (cX_green, cY_green), "around")], dtype=np.int32)]
 elif green_position == "two_part":
     if cX_green < cX_green_2:
         left_green_contour = coordinates_green_biggest
@@ -163,30 +165,11 @@ elif green_position == "two_part":
         right_green_center = (cX_green, cY_green)
         left_green_contour = coordinates_green
         left_green_center = (cX_green_2, cY_green_2)
-    left_green_contour = sorted(left_green_contour, key=lambda x: x[0] + x[1])
-    bottom_right = left_green_contour[-1]
-    left_green_contour = sorted(left_green_contour, key=lambda x: x[0] + (3000 - x[1]))
-    top_right = left_green_contour[-1]
-    cv.circle(result, bottom_right, 7, (255, 255, 255), -1)
-    cv.circle(result, top_right, 7, (255, 255, 255), -1)
-    array = [left_green_center, bottom_right, bottom_red, (cX_red, cY_red), top_red, top_right]
-    edge_contour = [np.array([array], dtype=np.int32)]
-    cv.drawContours(result, edge_contour, 0, (255, 255, 255), 2)
-
-    right_green_contour = sorted(right_green_contour, key=lambda x: x[0] + x[1])
-    top_left = right_green_contour[0]
-    right_green_contour = sorted(right_green_contour, key=lambda x: (3000 - x[0]) + x[1])
-    bottom_left = right_green_contour[-1]
-    cv.circle(result, top_left, 7, (0, 255, 255), -1)
-    cv.circle(result, bottom_left, 7, (255, 255, 255), -1)
-    array = [right_green_center, bottom_left, bottom_red, (cX_red, cY_red), top_red, top_left]
-    edge_contour = [np.array([array], dtype=np.int32)]
+    edge_contour = [np.array([getEdgeContour(left_green_contour, left_green_center, "left")], dtype=np.int32),
+                    np.array([getEdgeContour(right_green_contour, right_green_center, "right")], dtype=np.int32)]
+for cnt in edge_contour:
     # cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
-    cv.drawContours(result, edge_contour, 0, (0, 0, 0), 2)
-
-
-cv.circle(result, top_red, 7, (255, 255, 255), -1)
-cv.circle(result, bottom_red, 7, (255, 255, 255), -1)
+    cv.drawContours(result, cnt, 0, (255, 255, 255), 2)
 
 # Fill inside of final contours with correct color
 # cv.drawContours(result, contours_red_final, -1, (255, 0, 255), 3)
