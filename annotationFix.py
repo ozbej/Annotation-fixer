@@ -24,7 +24,7 @@ def getContourCenter(contour):
 
 
 # load image
-image = cv.imread('images/outlier3.png')
+image = cv.imread('images/2part1.png')
 imghsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 font = cv.FONT_HERSHEY_COMPLEX
 
@@ -124,6 +124,7 @@ if len(contours_green_final) == 1:
     else:
         green_position = "around"
 elif len(contours_green_final) == 2:
+    cX_green, cY_green = getContourCenter(biggest_contour_green)
     cX_green_2, cY_green_2 = getContourCenter(contours_green_final[1])
     green_position = "two_part"
 else:
@@ -139,7 +140,7 @@ if green_position == "left":
     array = [(cX_green, cY_green), bottom_right, bottom_red, (cX_red, cY_red), top_red, top_right]
     edge_contour = [np.array([array], dtype=np.int32)]
     #cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
-    cv.drawContours(result, edge_contour, 0, (255, 255, 255), 2)
+    #cv.drawContours(result, edge_contour, 0, (255, 255, 255), 2)
 elif green_position == "right":
     coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda x: x[0] + x[1])
     top_left = coordinates_green_biggest[0]
@@ -151,6 +152,38 @@ elif green_position == "right":
     edge_contour = [np.array([array], dtype=np.int32)]
     # cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
     cv.drawContours(result, edge_contour, 0, (255, 255, 255), 2)
+elif green_position == "two_part":
+    if cX_green < cX_green_2:
+        left_green_contour = coordinates_green_biggest
+        left_green_center = (cX_green, cY_green)
+        right_green_contour = coordinates_green
+        right_green_center = (cX_green_2, cY_green_2)
+    else:
+        right_green_contour = coordinates_green_biggest
+        right_green_center = (cX_green, cY_green)
+        left_green_contour = coordinates_green
+        left_green_center = (cX_green_2, cY_green_2)
+    left_green_contour = sorted(left_green_contour, key=lambda x: x[0] + x[1])
+    bottom_right = left_green_contour[-1]
+    left_green_contour = sorted(left_green_contour, key=lambda x: x[0] + (3000 - x[1]))
+    top_right = left_green_contour[-1]
+    cv.circle(result, bottom_right, 7, (255, 255, 255), -1)
+    cv.circle(result, top_right, 7, (255, 255, 255), -1)
+    array = [left_green_center, bottom_right, bottom_red, (cX_red, cY_red), top_red, top_right]
+    edge_contour = [np.array([array], dtype=np.int32)]
+    cv.drawContours(result, edge_contour, 0, (255, 255, 255), 2)
+
+    right_green_contour = sorted(right_green_contour, key=lambda x: x[0] + x[1])
+    top_left = right_green_contour[0]
+    right_green_contour = sorted(right_green_contour, key=lambda x: (3000 - x[0]) + x[1])
+    bottom_left = right_green_contour[-1]
+    cv.circle(result, top_left, 7, (0, 255, 255), -1)
+    cv.circle(result, bottom_left, 7, (255, 255, 255), -1)
+    array = [right_green_center, bottom_left, bottom_red, (cX_red, cY_red), top_red, top_left]
+    edge_contour = [np.array([array], dtype=np.int32)]
+    # cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
+    cv.drawContours(result, edge_contour, 0, (0, 0, 0), 2)
+
 
 cv.circle(result, top_red, 7, (255, 255, 255), -1)
 cv.circle(result, bottom_red, 7, (255, 255, 255), -1)

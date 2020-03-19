@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="336e50b2-3140-43bf-8f65-e93f84672673" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/annotationFix.py" beforeDir="false" afterPath="$PROJECT_DIR$/annotationFix.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/output.png" beforeDir="false" afterPath="$PROJECT_DIR$/output.png" afterDir="false" />
     </list>
@@ -14,7 +13,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/annotationFixer$RGBcontouring.coverage" NAME="RGBcontouring Coverage Results" MODIFIED="1584111837832" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/annotationFixer$annotationFix.coverage" NAME="annotationFix Coverage Results" MODIFIED="1584628413309" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/annotationFixer$annotationFix.coverage" NAME="annotationFix Coverage Results" MODIFIED="1584630702844" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -22,8 +21,8 @@
         <entry file="file://$PROJECT_DIR$/annotationFix.py">
           <provider selected="true" editor-type-id="live-pycharm">
             <state>
-              <first_editor relative-caret-position="102">
-                <caret line="129" column="18" selection-start-line="129" selection-start-column="18" selection-end-line="129" selection-end-column="18" />
+              <first_editor relative-caret-position="234">
+                <caret line="156" column="54" lean-forward="true" selection-start-line="156" selection-start-column="54" selection-end-line="156" selection-end-column="54" />
                 <folding>
                   <element signature="e#0#18#0" expanded="true" />
                 </folding>
@@ -182,12 +181,12 @@
       <workItem from="1584120176806" duration="971000" />
       <workItem from="1584528782281" duration="6268000" />
       <workItem from="1584548144155" duration="5079000" />
-      <workItem from="1584614412940" duration="6734000" />
+      <workItem from="1584614412940" duration="8345000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="47699000" />
+    <option name="totallyTimeSpent" value="49310000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -260,8 +259,8 @@
     <entry file="file://$PROJECT_DIR$/annotationFix.py">
       <provider selected="true" editor-type-id="live-pycharm">
         <state>
-          <first_editor relative-caret-position="102">
-            <caret line="129" column="18" selection-start-line="129" selection-start-column="18" selection-end-line="129" selection-end-column="18" />
+          <first_editor relative-caret-position="234">
+            <caret line="156" column="54" lean-forward="true" selection-start-line="156" selection-start-column="54" selection-end-line="156" selection-end-column="54" />
             <folding>
               <element signature="e#0#18#0" expanded="true" />
             </folding>
