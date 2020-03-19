@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="336e50b2-3140-43bf-8f65-e93f84672673" name="Default Changelist" comment="" />
+    <list default="true" id="336e50b2-3140-43bf-8f65-e93f84672673" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/2part1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2part2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2part3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2part4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/2part5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/annotationFix.py" beforeDir="false" afterPath="$PROJECT_DIR$/annotationFix.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/contours_blue.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/inlier1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/left1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/missingedge1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/missingedge2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlier1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlier2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlier3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/output.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/right1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test2.png" beforeDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -10,7 +29,7 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/annotationFixer$RGBcontouring.coverage" NAME="RGBcontouring Coverage Results" MODIFIED="1584111837832" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/annotationFixer$annotationFix.coverage" NAME="annotationFix Coverage Results" MODIFIED="1584617159209" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/annotationFixer$annotationFix.coverage" NAME="annotationFix Coverage Results" MODIFIED="1584617933882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -18,8 +37,8 @@
         <entry file="file://$PROJECT_DIR$/annotationFix.py">
           <provider selected="true" editor-type-id="live-pycharm">
             <state>
-              <first_editor relative-caret-position="204">
-                <caret line="12" column="36" lean-forward="true" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
+              <first_editor relative-caret-position="68">
+                <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
                 <folding>
                   <element signature="e#0#18#0" expanded="true" />
                 </folding>
@@ -27,11 +46,6 @@
               <second_editor />
             </state>
           </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/output.png">
-          <provider selected="true" editor-type-id="images" />
         </entry>
       </file>
     </leaf>
@@ -48,6 +62,9 @@
       <find>left_red</find>
     </findStrings>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -63,6 +80,7 @@
     <option name="width" value="1938" />
     <option name="height" value="880" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -173,12 +191,12 @@
       <workItem from="1584120176806" duration="971000" />
       <workItem from="1584528782281" duration="6268000" />
       <workItem from="1584548144155" duration="5079000" />
-      <workItem from="1584614412940" duration="2714000" />
+      <workItem from="1584614412940" duration="3316000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="43679000" />
+    <option name="totallyTimeSpent" value="44281000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -251,8 +269,8 @@
     <entry file="file://$PROJECT_DIR$/annotationFix.py">
       <provider selected="true" editor-type-id="live-pycharm">
         <state>
-          <first_editor relative-caret-position="204">
-            <caret line="12" column="36" lean-forward="true" selection-start-line="12" selection-start-column="36" selection-end-line="12" selection-end-column="36" />
+          <first_editor relative-caret-position="68">
+            <caret line="4" column="26" selection-start-line="4" selection-start-column="26" selection-end-line="4" selection-end-column="26" />
             <folding>
               <element signature="e#0#18#0" expanded="true" />
             </folding>

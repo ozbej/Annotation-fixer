@@ -2,7 +2,7 @@ import numpy as np
 import cv2 as cv
 
 # load image
-image = cv.imread('right1.png')
+image = cv.imread('images/right1.png')
 imghsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 font = cv.FONT_HERSHEY_COMPLEX
 
