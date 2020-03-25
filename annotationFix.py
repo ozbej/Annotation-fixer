@@ -1,6 +1,7 @@
 import numpy as np
 import cv2 as cv
 
+
 def getContourCoordinates(contour):
     coordinates = list()
     approx_biggest = cv.approxPolyDP(contour, 0.009 * cv.arcLength(contour, True), True)
@@ -14,6 +15,7 @@ def getContourCoordinates(contour):
         i += 1
     return coordinates
 
+
 def getContourCenter(contour):
     m = cv.moments(contour)
     cx = int(m["m10"] / m["m00"])
@@ -22,26 +24,28 @@ def getContourCenter(contour):
     cv.putText(result, "center", (cx - 20, cy - 20), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
     return cx, cy
 
+
 def getEdgeContour(coordinates, center, position):
+    coordinates = sorted(coordinates, key=lambda x: x[0] + x[1])
+    bottom_right = coordinates[-1]
+    coordinates = sorted(coordinates, key=lambda x: x[0] + (1000 - x[1]))
+    top_right = coordinates[-1]
+    coordinates = sorted(coordinates, key=lambda x: x[0] + x[1])
+    top_left = coordinates[0]
+    coordinates = sorted(coordinates, key=lambda x: (1000 - x[0]) + x[1])
+    bottom_left = coordinates[-1]
+    print(top_left, bottom_left)
     if position == "left":
-        coordinates = sorted(coordinates, key=lambda x: x[0] + x[1])
-        bottom_right = coordinates[-1]
-        coordinates = sorted(coordinates, key=lambda x: x[0] + (3000 - x[1]))
-        top_right = coordinates[-1]
         array = [center, bottom_right, bottom_red, (cX_red, cY_red), top_red, top_right]
     elif position == "right":
-        coordinates = sorted(coordinates, key=lambda x: x[0] + x[1])
-        top_left = coordinates[0]
-        coordinates = sorted(coordinates, key=lambda x: (3000 - x[0]) + x[1])
-        bottom_left = coordinates[-1]
         array = [center, bottom_left, bottom_red, (cX_red, cY_red), top_red, top_left]
     elif position == "around":
-        array = [top_green_biggest, right_green_biggest, bottom_green_biggest, left_green_biggest]
+        array = [top_green_biggest, top_right, right_green_biggest, bottom_right, bottom_green_biggest, bottom_left, left_green_biggest, top_left]
     return array
 
 
 # Load image
-image = cv.imread('images/2part1.png')
+image = cv.imread('images/missingedge1.png')
 imghsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 font = cv.FONT_HERSHEY_COMPLEX
 
@@ -123,11 +127,6 @@ contours_blue_final.append(biggest_contour_blue)
 mask = cv.bitwise_not(mask)
 result = cv.bitwise_and(image, image, mask=mask)
 
-# Fill inside of final contours with correct color
-cv.drawContours(result, contours_red_final, -1, (0, 0, 255), -1)
-cv.drawContours(result, contours_green_final, -1, (0, 255, 0), -1)
-cv.drawContours(result, contours_blue_final, -1, (255, 0, 0), -1)
-
 # Compute the center of contours
 # Red
 cX_red, cY_red = getContourCenter(biggest_contour_red)
@@ -168,13 +167,15 @@ elif green_position == "two_part":
     edge_contour = [np.array([getEdgeContour(left_green_contour, left_green_center, "left")], dtype=np.int32),
                     np.array([getEdgeContour(right_green_contour, right_green_center, "right")], dtype=np.int32)]
 for cnt in edge_contour:
-    # cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
-    cv.drawContours(result, cnt, 0, (255, 255, 255), 2)
+    cv.drawContours(result, edge_contour, 0, (0, 255, 0), -1)
 
 # Fill inside of final contours with correct color
-# cv.drawContours(result, contours_red_final, -1, (255, 0, 255), 3)
-# cv.drawContours(result, contours_green_final, -1, (0, 255, 0), -1)
-# cv.drawContours(result, contours_blue_final, -1, (255, 0, 0), -1)
+cv.drawContours(result, contours_green_final, -1, (0, 255, 0), -1)
+cv.drawContours(result, contours_red_final, -1, (0, 0, 255), -1)
+cv.drawContours(result, contours_blue_final, -1, (255, 0, 0), -1)
+
+# for cnt in edge_contour:
+# cv.drawContours(result, cnt, 0, (255, 255, 255), 2)
 
 
 # Show image
