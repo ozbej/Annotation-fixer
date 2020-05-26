@@ -16,9 +16,15 @@ def get_contour_coordinates(contour):
     return coordinates
 
 
+def get_contour_center(contour):
+    m = cv.moments(contour)
+    cx = int(m["m10"] / m["m00"])
+    cy = int(m["m01"] / m["m00"])
+    return cx, cy
+
+
 def process_image():
     # Load image
-    print(image.shape)
     img_hsv = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 
     # Find red contours
@@ -44,9 +50,6 @@ def process_image():
     # Draw all green contours but the biggest one on the mask
     for c in contours_green:
         if not np.array_equal(biggest_contour_green, c):
-            # Remove small contours
-            if cv.contourArea(c) < 5000:
-                continue
             # Get coordinates of other contours
             coordinates_green = get_contour_coordinates(c)
             coordinates_green = sorted(coordinates_green, key=lambda tup: tup[1])
@@ -59,32 +62,36 @@ def process_image():
                 contours_green_final.append(c)
 
     # Find blue contours
-    mask_blue = cv.inRange(img_hsv, np.array([110, 50, 50]), np.array([130, 255, 255]))
+    mask_blue = cv.inRange(img_hsv, np.array([110, 255, 255]), np.array([130, 255, 255]))
     contours_blue, _ = cv.findContours(mask_blue, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     biggest_contour_blue = max(contours_blue, key=cv.contourArea)
 
     # Fill missing edges
+    red_center = get_contour_center(biggest_contour_red)
     hull_green = []
     for cnt in contours_green_final:
         hull_green.append(cv.convexHull(cnt, False))
     cv.drawContours(original, hull_green, -1, (0, 255, 0), -1)
-    if cv.contourArea(biggest_contour_red) > 5000:
+    if cv.contourArea(biggest_contour_red) > 2500 and (top_green_biggest[1] < red_center[1] < bottom_green_biggest[1]):
         hull_red = cv.convexHull(biggest_contour_red, False)
         cv.drawContours(original, [hull_red], -1, (0, 0, 255), -1)
 
     # Fill inside of final contours with correct color
     cv.drawContours(original, contours_green_final, -1, (0, 255, 0), -1)
-    if cv.contourArea(biggest_contour_red) > 5000:
+    if cv.contourArea(biggest_contour_red) > 2500 and (top_green_biggest[1] < red_center[1] < bottom_green_biggest[1]):
         cv.drawContours(original, [biggest_contour_red], -1, (0, 0, 255), -1)
-    if cv.contourArea(biggest_contour_blue) > 5000:
+    blue_center = get_contour_center(biggest_contour_blue)
+    if cv.contourArea(biggest_contour_blue) > 2500 and (top_green_biggest[1] < blue_center[1] < bottom_green_biggest[1]):
         cv.drawContours(original, [biggest_contour_blue], -1, (255, 0, 0), -1)
+
+    # Debug
 
     # Write to original image
     cv.imwrite(output, original)
 
 
 # Parametri
-basename = "35_2p_Ls_2"
+basename = "11_1p_Rs_2"
 image = cv.imread('images/' + basename + '.png')
 output = "output.png"
 original = cv.imread('images/' + basename + '.jpg')

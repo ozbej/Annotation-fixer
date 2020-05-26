@@ -78,6 +78,13 @@ def main(args):
 	)
 
 
+def _get_contour_center(contour):
+	m = cv2.moments(contour)
+	cx = int(m["m10"] / m["m00"])
+	cy = int(m["m01"] / m["m00"])
+	return cx, cy
+
+
 def _get_contour_coordinates(contour):
 	coordinates = list()
 	approx_biggest = cv2.approxPolyDP(contour, 0.009 * cv2.arcLength(contour, True), True)
@@ -94,78 +101,81 @@ def _get_contour_coordinates(contour):
 
 def _process_image(annotation_f, original_f, target_f):
 	basename = os.path.splitext(os.path.basename(annotation_f))[0]
-	print(f"Processing {basename})")
+	print(f"Processing {basename}")
 	assert os.path.splitext(os.path.basename(original_f))[0] == basename
 
-	# Parameters
-	image = cv2.imread(annotation_f)
-	output = target_f
-	original = cv2.imread(original_f.replace('.png', '.jpg'))
+	try:
+		# Parameters
+		image = cv2.imread(annotation_f)
+		output = target_f
+		original = cv2.imread(original_f.replace('.png', '.jpg'))
 
-	# Load image
-	img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+		# Load image
+		img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-	# Find red contours
-	mask_red1 = cv2.inRange(img_hsv, np.array([0, 245, 245]), np.array([0, 255, 255]))
-	mask_red2 = cv2.inRange(img_hsv, np.array([0, 255, 255]), np.array([0, 255, 255]))
-	mask_red = mask_red1 + mask_red2
-	contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-	biggest_contour_red = max(contours_red, key=cv2.contourArea)
+		# Find red contours
+		mask_red1 = cv2.inRange(img_hsv, np.array([0, 245, 245]), np.array([0, 255, 255]))
+		mask_red2 = cv2.inRange(img_hsv, np.array([0, 255, 255]), np.array([0, 255, 255]))
+		mask_red = mask_red1 + mask_red2
+		contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+		biggest_contour_red = max(contours_red, key=cv2.contourArea)
 
-	# Find green contours
-	mask_green = cv2.inRange(img_hsv, np.array([50, 50, 120]), np.array([70, 255, 255]))
-	contours_green, _ = cv2.findContours(mask_green, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-	biggest_contour_green = max(contours_green, key=cv2.contourArea)
-	# Create list of contours to fill inside
-	contours_green_final = list()
-	if cv2.contourArea(biggest_contour_green) > 5000:
-		contours_green_final.append(biggest_contour_green)
-	# Get coordinates of the biggest green contour
-	coordinates_green_biggest = _get_contour_coordinates(biggest_contour_green)
-	coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda tup: tup[1])
-	top_green_biggest = coordinates_green_biggest[0]
-	bottom_green_biggest = coordinates_green_biggest[-1]
-	# Draw all green contours but the biggest one on the mask
-	for c in contours_green:
-		if not np.array_equal(biggest_contour_green, c):
-			# Remove small contours
-			if cv2.contourArea(c) < 5000:
-				continue
-			# Get coordinates of other contours
-			coordinates_green = _get_contour_coordinates(c)
-			coordinates_green = sorted(coordinates_green, key=lambda tup: tup[1])
-			top_green_other = coordinates_green[0]
-			bottom_green_other = coordinates_green[-1]
-			# Check that coordinates match
-			if bottom_green_other[1] < top_green_biggest[1] or top_green_other[1] > bottom_green_biggest[1]:
-				continue
-			else:
-				contours_green_final.append(c)
+		# Find green contours
+		mask_green = cv2.inRange(img_hsv, np.array([50, 50, 120]), np.array([70, 255, 255]))
+		contours_green, _ = cv2.findContours(mask_green, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+		biggest_contour_green = max(contours_green, key=cv2.contourArea)
+		# Create list of contours to fill inside
+		contours_green_final = list()
+		if cv2.contourArea(biggest_contour_green) > 5000:
+			contours_green_final.append(biggest_contour_green)
+		# Get coordinates of the biggest green contour
+		coordinates_green_biggest = _get_contour_coordinates(biggest_contour_green)
+		coordinates_green_biggest = sorted(coordinates_green_biggest, key=lambda tup: tup[1])
+		top_green_biggest = coordinates_green_biggest[0]
+		bottom_green_biggest = coordinates_green_biggest[-1]
+		# Draw all green contours but the biggest one on the mask
+		for c in contours_green:
+			if not np.array_equal(biggest_contour_green, c):
+				# Get coordinates of other contours
+				coordinates_green = _get_contour_coordinates(c)
+				coordinates_green = sorted(coordinates_green, key=lambda tup: tup[1])
+				top_green_other = coordinates_green[0]
+				bottom_green_other = coordinates_green[-1]
+				# Check that coordinates match
+				if bottom_green_other[1] < top_green_biggest[1] or top_green_other[1] > bottom_green_biggest[1]:
+					continue
+				else:
+					contours_green_final.append(c)
 
-	# Find blue contours
-	mask_blue = cv2.inRange(img_hsv, np.array([110, 50, 50]), np.array([130, 255, 255]))
-	contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-	biggest_contour_blue = max(contours_blue, key=cv2.contourArea)
+		# Find blue contours
+		mask_blue = cv2.inRange(img_hsv, np.array([110, 255, 255]), np.array([130, 255, 255]))
+		contours_blue, _ = cv2.findContours(mask_blue, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+		biggest_contour_blue = max(contours_blue, key=cv2.contourArea)
 
-	# Fill missing edges
-	hull_green = []
-	for cnt in contours_green_final:
-		hull_green.append(cv2.convexHull(cnt, False))
-	cv2.drawContours(original, hull_green, -1, (0, 255, 0), -1)
-	if cv2.contourArea(biggest_contour_red) > 5000:
-		hull_red = cv2.convexHull(biggest_contour_red, False)
-		cv2.drawContours(original, [hull_red], -1, (0, 0, 255), -1)
+		# Fill missing edges
+		red_center = _get_contour_center(biggest_contour_red)
+		hull_green = []
+		for cnt in contours_green_final:
+			hull_green.append(cv2.convexHull(cnt, False))
+		cv2.drawContours(original, hull_green, -1, (0, 255, 0), -1)
+		if cv2.contourArea(biggest_contour_red) > 2500 and (top_green_biggest[1] < red_center[1] < bottom_green_biggest[1]):
+			hull_red = cv2.convexHull(biggest_contour_red, False)
+			cv2.drawContours(original, [hull_red], -1, (0, 0, 255), -1)
 
-	# Fill inside of final contours with correct color
-	cv2.drawContours(original, contours_green_final, -1, (0, 255, 0), -1)
-	if cv2.contourArea(biggest_contour_red) > 5000:
-		cv2.drawContours(original, [biggest_contour_red], -1, (0, 0, 255), -1)
-	if cv2.contourArea(biggest_contour_blue) > 5000:
-		cv2.drawContours(original, [biggest_contour_blue], -1, (255, 0, 0), -1)
+		# Fill inside of final contours with correct color
+		cv2.drawContours(original, contours_green_final, -1, (0, 255, 0), -1)
+		if cv2.contourArea(biggest_contour_red) > 2500 and (top_green_biggest[1] < red_center[1] < bottom_green_biggest[1]):
+			cv2.drawContours(original, [biggest_contour_red], -1, (0, 0, 255), -1)
+		blue_center = _get_contour_center(biggest_contour_blue)
+		if cv2.contourArea(biggest_contour_blue) > 2500 and (top_green_biggest[1] < blue_center[1] < bottom_green_biggest[1]):
+			cv2.drawContours(original, [biggest_contour_blue], -1, (255, 0, 0), -1)
 
-	# Write to original image
-	print(f"Saving to {target_f}")
-	cv2.imwrite(output, original)
+		# Write to original image
+		print(f"Saving to {target_f}")
+		cv2.imwrite(output, original)
+
+	except (cv2.error, ValueError):
+		print('Napaka v ' + basename)
 
 
 def _match(f, strict, valid_exts, valid_re):
